@@ -1,0 +1,77 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Purely Flex - Adaptive Team Solutions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        /* Fresh CSS Variables for Scrollbar */
+        /* Gradient: #5399f5 (Blue), #bd75f7 (Purple), #54b684 (Green) */
+        --custom-scroll-thumb: linear-gradient(to bottom, #5399f5, #bd75f7, #54b684);
+        --custom-scroll-track: #f8fafc;
+        --custom-scroll-ff-thumb: #5399f5; /* Fallback solid color for Firefox */
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        overflow-x: hidden;
+      }
+
+      /* Firefox */
+      html {
+        scrollbar-width: thin;
+        scrollbar-color: var(--custom-scroll-ff-thumb) var(--custom-scroll-track);
+      }
+
+      /* Webkit (Chrome, Edge, Safari) */
+      ::-webkit-scrollbar {
+        width: 16px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: var(--custom-scroll-track);
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: var(--custom-scroll-thumb);
+        border-radius: 100vh; /* Pill shape */
+        border: 4px solid var(--custom-scroll-track); /* Creates padding effect */
+        background-clip: content-box;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        border-width: 3px; /* Expands slightly on hover */
+      }
+
+      .font-hand {
+        font-family: 'Patrick Hand', cursive;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "recharts": "https://aistudiocdn.com/recharts@^3.4.1",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0"
+  }
+}
+</script>
+    <!-- Start of HubSpot Embed Code -->
+    <!-- Replace YOUR_PORTAL_ID with your actual HubSpot ID -->
+    <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/YOUR_PORTAL_ID.js"></script>
+    <!-- End of HubSpot Embed Code -->
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-slate-50 text-slate-900 antialiased">
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

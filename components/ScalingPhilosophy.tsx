@@ -1,0 +1,128 @@
+import React from 'react';
+import { ScrollReveal } from './ScrollReveal';
+import { GitGraph, Rocket, LineChart, Layers } from 'lucide-react';
+
+const stages = [
+    {
+        id: 1,
+        title: "Test & Learn",
+        period: "Months 1-3",
+        recommendation: "Purely Flex",
+        icon: <Layers size={24} />,
+        points: [
+            "Experience all three services",
+            "Discover where AI/Remote creates value",
+            "Build trust & rhythms",
+            "Keep costs contained"
+        ],
+        color: "bg-indigo-500"
+    },
+    {
+        id: 2,
+        title: "Strategic Focus",
+        period: "Months 4-9",
+        recommendation: "+1 Focused Team",
+        icon: <GitGraph size={24} />,
+        points: [
+            "Add Dedicated Team based on value",
+            "Keep Flex for other areas",
+            "Example: Focused Recruiting + Flex Dev",
+            "Scale where ROI is proven"
+        ],
+        color: "bg-purple-500"
+    },
+    {
+        id: 3,
+        title: "Multi-Service Excellence",
+        period: "Months 10+",
+        recommendation: "2-3 Focused Teams",
+        icon: <LineChart size={24} />,
+        points: [
+            "Continuous Talent Pipeline",
+            "Professional Proposal Dept",
+            "Custom Tech Advantage",
+            "Flex as strategic backup"
+        ],
+        color: "bg-emerald-500"
+    }
+];
+
+export const ScalingPhilosophy: React.FC = () => {
+    return (
+        <section className="py-24 bg-white overflow-hidden">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <ScrollReveal>
+                    <div className="text-center mb-20">
+                        <h2 className="text-3xl font-bold text-slate-900 mb-4">Scaling Philosophy</h2>
+                        <p className="text-xl text-slate-600">Start Smart, Grow Strategically.</p>
+                    </div>
+                </ScrollReveal>
+
+                <div className="relative">
+                    {/* Connection Line (Desktop) */}
+                    <div className="hidden lg:block absolute top-24 left-0 right-0 h-1 bg-slate-100 -z-10">
+                         <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500 opacity-20"></div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                        {stages.map((stage, idx) => (
+                            <ScrollReveal key={stage.id} delay={idx * 200}>
+                                <div className="relative group">
+                                    {/* Timeline Dot */}
+                                    <div className={`hidden lg:flex w-12 h-12 mx-auto mb-8 rounded-full ${stage.color} text-white items-center justify-center shadow-lg z-10 relative group-hover:scale-110 transition-transform duration-300`}>
+                                        <span className="font-bold">{stage.id}</span>
+                                    </div>
+
+                                    {/* Card */}
+                                    <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-2 h-full">
+                                        <div className="lg:hidden mb-6 inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-900 text-white font-bold">
+                                            {stage.id}
+                                        </div>
+                                        
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className={`p-3 rounded-xl ${stage.color} bg-opacity-10 text-${stage.color.split('-')[1]}-600`}>
+                                                {stage.icon}
+                                            </div>
+                                            <span className="text-xs font-bold uppercase tracking-widest text-slate-400">{stage.period}</span>
+                                        </div>
+
+                                        <h3 className="text-2xl font-bold text-slate-900 mb-2">{stage.title}</h3>
+                                        <div className="text-sm font-medium text-slate-500 mb-6">Recommended: <span className="text-slate-900">{stage.recommendation}</span></div>
+
+                                        <ul className="space-y-3">
+                                            {stage.points.map((p, i) => (
+                                                <li key={i} className="flex items-start gap-3 text-slate-600 text-sm leading-relaxed">
+                                                    <span className={`mt-1.5 w-1.5 h-1.5 rounded-full ${stage.color}`}></span>
+                                                    {p}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </ScrollReveal>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Value Prop */}
+                <ScrollReveal delay={600}>
+                    <div className="mt-20 bg-slate-50 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 border border-slate-100">
+                        <div className="md:w-2/3">
+                            <h3 className="text-xl font-bold text-slate-900 mb-2">Never pay for capacity you don't need.</h3>
+                            <p className="text-slate-600 leading-relaxed">
+                                Most agencies front-load costs. We align costs with value. 
+                                Prove ROI in Stage 1 before committing to Stage 2.
+                            </p>
+                        </div>
+                        <div className="md:w-1/3 flex justify-center md:justify-end">
+                            <button className="px-6 py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-slate-800 transition-colors shadow-lg flex items-center gap-2">
+                                <Rocket size={18} />
+                                Start Stage 1
+                            </button>
+                        </div>
+                    </div>
+                </ScrollReveal>
+            </div>
+        </section>
+    );
+};
