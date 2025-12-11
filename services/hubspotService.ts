@@ -1,9 +1,9 @@
 
 // services/hubspotService.ts
 
-// These should be defined in your environment variables
-const PORTAL_ID = process.env.REACT_APP_HS_PORTAL_ID || 'YOUR_PORTAL_ID';
-const FORM_ID = process.env.REACT_APP_HS_FORM_ID || 'YOUR_FORM_GUID';
+// These should be defined in your Vite environment variables
+const PORTAL_ID = import.meta.env.VITE_HS_PORTAL_ID || 'YOUR_PORTAL_ID';
+const FORM_ID = import.meta.env.VITE_HS_FORM_ID || 'YOUR_FORM_GUID';
 
 interface HubSpotFormData {
   email: string;
@@ -54,7 +54,7 @@ export const submitToHubSpot = async (data: HubSpotFormData) => {
 
   try {
     const response = await fetch(
-      `https://api.hsforms.com/submissions/v3/integration/submit/${PORTAL_ID}/${FORM_ID}`,
+      `https://api.hsforms.com/submissions/v3/public/submit/${PORTAL_ID}/${FORM_ID}`,
       {
         method: 'POST',
         headers: {
