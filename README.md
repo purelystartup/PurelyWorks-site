@@ -21,6 +21,8 @@ View your app in AI Studio: https://ai.studio/apps/drive/1h-FHIUVPdqF8Y0aBHTRuI_
 
 If you're deploying on Vercel, include the provided `vercel.json` so routes like `/admin` and `/blog` resolve to the SPA entrypoint instead of returning a 404.
 
+Set `VITE_PAYLOAD_ADMIN_URL` to the URL of your Payload admin dashboard (for example, `https://cms.purelyworks.com/admin`) so the `/admin` handoff redirects to the live CMS instead of stopping at the local success message.
+
 ## Payload-ready theme and routes
 
 - Core marketing pages: `/`, `/purely-flex`, `/focused-development`, `/focused-recruiting`, `/focused-proposals`
