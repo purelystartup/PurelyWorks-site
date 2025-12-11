@@ -28,6 +28,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate 
     { label: 'Development', page: 'DEV' },
     { label: 'Recruiting', page: 'RECRUITING' },
     { label: 'Proposals', page: 'PROPOSALS' },
+    { label: 'CRM', page: 'CRM' },
   ];
 
   const handleNav = (page: Page) => {
@@ -57,6 +58,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate 
     if (page === 'DEV') color = 'var(--celadon)';
     if (page === 'RECRUITING') color = 'var(--ocean-blue)';
     if (page === 'PROPOSALS') color = 'var(--bright-lavender)';
+    if (page === 'CRM') color = 'var(--sunlit-clay)';
 
     return {
       textStyle: { color },

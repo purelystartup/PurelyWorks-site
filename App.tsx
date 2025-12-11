@@ -10,6 +10,8 @@ import { FocusedProposals } from './pages/FocusedProposals';
 import { MoleEasterEgg } from './components/MoleEasterEgg';
 import { LeadCaptureModal } from './components/LeadCaptureModal';
 import { LeadCaptureProvider } from './context/LeadCaptureContext';
+import { CRMProvider } from './context/CRMContext';
+import { CRM } from './pages/CRM';
 import { Page } from './types';
 import { trackHubSpotPageView } from './services/hubspotService';
 
@@ -23,7 +25,8 @@ const App: React.FC = () => {
         'FLEX': '/purely-flex',
         'DEV': '/focused-development',
         'RECRUITING': '/focused-recruiting',
-        'PROPOSALS': '/focused-proposals'
+        'PROPOSALS': '/focused-proposals',
+        'CRM': '/crm'
     };
     trackHubSpotPageView(pathMap[currentPage]);
   }, [currentPage]);
@@ -50,6 +53,11 @@ const App: React.FC = () => {
         thumbStyle = 'var(--ocean-blue)';
         ffThumbColor = 'var(--ocean-blue)';
         break;
+      case 'CRM':
+        // CRM workspace -> sunlit clay
+        thumbStyle = 'var(--sunlit-clay)';
+        ffThumbColor = 'var(--sunlit-clay)';
+        break;
       case 'HOME':
       case 'FLEX':
       default:
@@ -71,27 +79,30 @@ const App: React.FC = () => {
       case 'DEV': return <FocusedDevelopment />;
       case 'RECRUITING': return <FocusedRecruiting />;
       case 'PROPOSALS': return <FocusedProposals />;
+      case 'CRM': return <CRM />;
       default: return <Home onNavigate={setCurrentPage} />;
     }
   };
 
   return (
-    <LeadCaptureProvider>
-      <div className="min-h-screen w-full overflow-x-hidden bg-slate-50 font-sans text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
-        <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
-        
-        <main>
-          {renderPage()}
-        </main>
+    <CRMProvider>
+      <LeadCaptureProvider>
+        <div className="min-h-screen w-full overflow-x-hidden bg-slate-50 font-sans text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
+          <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
 
-        <div id="contact">
-          <ContactFooter />
+          <main>
+            {renderPage()}
+          </main>
+
+          <div id="contact">
+            <ContactFooter />
+          </div>
+
+          <LeadCaptureModal />
+          <MoleEasterEgg />
         </div>
-
-        <LeadCaptureModal />
-        <MoleEasterEgg />
-      </div>
-    </LeadCaptureProvider>
+      </LeadCaptureProvider>
+    </CRMProvider>
   );
 };
 
