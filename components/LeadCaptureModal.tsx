@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Mail, ArrowRight, CheckCircle2, Loader2, Calendar, MessageSquare, Send } from 'lucide-react';
 import { useLeadCapture } from '../context/LeadCaptureContext';
-import { submitToHubSpot } from '../services/hubspotService';
+import { findContactByEmail, upsertContact } from '../services/hubspotService';
 
 type Step = 'EMAIL' | 'NAME' | 'OPTIONS' | 'BOOKING' | 'MESSAGE';
 
@@ -11,6 +11,7 @@ export const LeadCaptureModal: React.FC = () => {
   const [step, setStep] = useState<Step>('EMAIL');
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  const [knownContact, setKnownContact] = useState<Awaited<ReturnType<typeof findContactByEmail>>>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   // Message State
@@ -56,15 +57,26 @@ export const LeadCaptureModal: React.FC = () => {
     if (!email) return;
     setIsLoading(true);
 
-    // 1. Submit to HubSpot to create contact and associate tracking cookie
-    await submitToHubSpot({ email });
-    
+    // 1. Check HubSpot for an existing contact
+    const contact = await findContactByEmail(email);
+    setKnownContact(contact);
+
+    // 2. Submit/upsert to HubSpot to create contact and associate tracking cookie
+    await upsertContact({ email }, contact ?? undefined);
+
     // Check local storage match
     const storedName = localStorage.getItem('pw_lead_name');
     const storedEmail = localStorage.getItem('pw_lead_email');
-    
+
     setIsLoading(false);
-    if (storedName && storedEmail === email) {
+    if (contact?.firstname) {
+      const fullName = [contact.firstname, contact.lastname].filter(Boolean).join(' ').trim();
+      const resolvedName = fullName || contact.firstname || contact.email;
+      setName(resolvedName);
+      localStorage.setItem('pw_lead_email', email);
+      localStorage.setItem('pw_lead_name', resolvedName);
+      setStep('OPTIONS');
+    } else if (storedName && storedEmail === email) {
       setName(storedName);
       setStep('OPTIONS');
     } else {
@@ -83,8 +95,8 @@ export const LeadCaptureModal: React.FC = () => {
     const lastname = nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined;
 
     // 2. Submit to HubSpot to update contact name
-    await submitToHubSpot({ email, firstname, lastname });
-    
+    await upsertContact({ email, firstname, lastname }, knownContact ?? undefined);
+
     localStorage.setItem('pw_lead_email', email);
     localStorage.setItem('pw_lead_name', name);
     
@@ -102,13 +114,13 @@ export const LeadCaptureModal: React.FC = () => {
     const lastname = nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined;
 
     // 3. Submit Message to HubSpot
-    await submitToHubSpot({ 
-        email, 
-        firstname, 
-        lastname, 
-        subject: messageSubject, 
-        message: messageBody 
-    });
+    await upsertContact({
+      email,
+      firstname,
+      lastname,
+      subject: messageSubject,
+      message: messageBody
+    }, knownContact ?? undefined);
 
     setIsSendingMessage(false);
     setMessageSent(true);
@@ -222,7 +234,10 @@ export const LeadCaptureModal: React.FC = () => {
           {/* STEP 4: BOOKING (HUBSPOT) */}
           {step === 'BOOKING' && (
              <div className="w-full h-full overflow-y-auto bg-white">
-                <div className="meetings-iframe-container" data-src="https://meetings-na2.hubspot.com/kheloco/discovery-call-45min?embed=true"></div>
+                <div
+                  className="meetings-iframe-container"
+                  data-src={`https://meetings-na2.hubspot.com/kheloco/discovery-call-45min?embed=true${email ? `&email=${encodeURIComponent(email)}` : ''}${name ? `&firstname=${encodeURIComponent(name.split(' ')[0])}&lastname=${encodeURIComponent(name.split(' ').slice(1).join(' '))}` : ''}`}
+                ></div>
              </div>
           )}
 

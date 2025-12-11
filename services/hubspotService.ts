@@ -4,6 +4,7 @@
 // These should be defined in your Vite environment variables
 const PORTAL_ID = import.meta.env.VITE_HS_PORTAL_ID || 'YOUR_PORTAL_ID';
 const FORM_ID = import.meta.env.VITE_HS_FORM_ID || 'YOUR_FORM_GUID';
+const PRIVATE_APP_TOKEN = import.meta.env.VITE_HS_PRIVATE_APP_TOKEN;
 
 interface HubSpotFormData {
   email: string;
@@ -11,6 +12,13 @@ interface HubSpotFormData {
   lastname?: string;
   message?: string;
   subject?: string;
+}
+
+export interface HubSpotContact {
+  id?: string;
+  email: string;
+  firstname?: string;
+  lastname?: string;
 }
 
 // Helper to get the HubSpot Tracking Cookie (hubspotutk)
@@ -73,6 +81,100 @@ export const submitToHubSpot = async (data: HubSpotFormData) => {
   } catch (error) {
     console.error('HubSpot API Error:', error);
     // We don't throw here to prevent blocking the UI flow if the API fails (e.g. AdBlocker)
+  }
+};
+
+/**
+ * Queries HubSpot for a contact by email when a Private App token is provided.
+ */
+export const findContactByEmail = async (email: string): Promise<HubSpotContact | null> => {
+  if (!PRIVATE_APP_TOKEN) return null;
+
+  try {
+    const response = await fetch('https://api.hubapi.com/crm/v3/objects/contacts/search', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${PRIVATE_APP_TOKEN}`,
+      },
+      body: JSON.stringify({
+        filterGroups: [
+          {
+            filters: [
+              {
+                propertyName: 'email',
+                operator: 'EQ',
+                value: email,
+              },
+            ],
+          },
+        ],
+        properties: ['firstname', 'lastname', 'email'],
+        limit: 1,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('HubSpot contact lookup failed', await response.text());
+      return null;
+    }
+
+    const result = await response.json();
+    const contact = result?.results?.[0];
+    if (!contact) return null;
+
+    return {
+      id: contact.id,
+      email: contact.properties?.email,
+      firstname: contact.properties?.firstname,
+      lastname: contact.properties?.lastname,
+    };
+  } catch (error) {
+    console.error('HubSpot contact lookup error', error);
+    return null;
+  }
+};
+
+/**
+ * Ensures the contact record exists/updates in HubSpot using the Private App token when available.
+ * Falls back to form submission only when no token is configured.
+ */
+export const upsertContact = async (data: HubSpotFormData, existingContact?: HubSpotContact | null) => {
+  // Always submit to the public form so activity is tracked and the hubspotutk is associated
+  await submitToHubSpot(data);
+
+  if (!PRIVATE_APP_TOKEN) return;
+
+  const properties: Record<string, string> = { email: data.email };
+  if (data.firstname) properties.firstname = data.firstname;
+  if (data.lastname) properties.lastname = data.lastname;
+  if (data.message) properties.message = data.message;
+  if (data.subject) properties.subject = data.subject;
+
+  try {
+    const contact = existingContact ?? (await findContactByEmail(data.email));
+
+    if (contact?.id) {
+      await fetch(`https://api.hubapi.com/crm/v3/objects/contacts/${contact.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${PRIVATE_APP_TOKEN}`,
+        },
+        body: JSON.stringify({ properties }),
+      });
+    } else {
+      await fetch('https://api.hubapi.com/crm/v3/objects/contacts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${PRIVATE_APP_TOKEN}`,
+        },
+        body: JSON.stringify({ properties }),
+      });
+    }
+  } catch (error) {
+    console.error('HubSpot upsert error', error);
   }
 };
 
