@@ -54,15 +54,16 @@ export const LeadCaptureModal: React.FC = () => {
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail) return;
     setIsLoading(true);
 
     // 1. Check HubSpot for an existing contact
-    const contact = await findContactByEmail(email);
+    const contact = await findContactByEmail(normalizedEmail);
     setKnownContact(contact);
 
     // 2. Submit/upsert to HubSpot to create contact and associate tracking cookie
-    await upsertContact({ email }, contact ?? undefined);
+    await upsertContact({ email: normalizedEmail }, contact ?? undefined);
 
     // Check local storage match
     const storedName = localStorage.getItem('pw_lead_name');
@@ -73,10 +74,10 @@ export const LeadCaptureModal: React.FC = () => {
       const fullName = [contact.firstname, contact.lastname].filter(Boolean).join(' ').trim();
       const resolvedName = fullName || contact.firstname || contact.email;
       setName(resolvedName);
-      localStorage.setItem('pw_lead_email', email);
+      localStorage.setItem('pw_lead_email', normalizedEmail);
       localStorage.setItem('pw_lead_name', resolvedName);
       setStep('OPTIONS');
-    } else if (storedName && storedEmail === email) {
+    } else if (storedName && storedEmail === normalizedEmail) {
       setName(storedName);
       setStep('OPTIONS');
     } else {

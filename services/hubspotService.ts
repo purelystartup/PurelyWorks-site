@@ -2,9 +2,22 @@
 // services/hubspotService.ts
 
 // These should be defined in your Vite environment variables
-const PORTAL_ID = import.meta.env.VITE_HS_PORTAL_ID || 'YOUR_PORTAL_ID';
-const FORM_ID = import.meta.env.VITE_HS_FORM_ID || 'YOUR_FORM_GUID';
-const PRIVATE_APP_TOKEN = import.meta.env.VITE_HS_PRIVATE_APP_TOKEN;
+const PORTAL_ID =
+  import.meta.env.VITE_HS_PORTAL_ID ||
+  import.meta.env.VITE_HUBSPOT_PORTAL_ID ||
+  import.meta.env.HS_PORTAL_ID ||
+  'YOUR_PORTAL_ID';
+
+const FORM_ID =
+  import.meta.env.VITE_HS_FORM_ID ||
+  import.meta.env.VITE_HUBSPOT_FORM_ID ||
+  import.meta.env.HS_FORM_ID ||
+  'YOUR_FORM_GUID';
+
+const PRIVATE_APP_TOKEN =
+  import.meta.env.VITE_HS_PRIVATE_APP_TOKEN ||
+  import.meta.env.VITE_HUBSPOT_PRIVATE_APP_TOKEN ||
+  import.meta.env.HS_PRIVATE_APP_TOKEN;
 
 interface HubSpotFormData {
   email: string;
@@ -69,6 +82,7 @@ export const submitToHubSpot = async (data: HubSpotFormData) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(body),
+        mode: 'cors',
       }
     );
 
@@ -95,6 +109,7 @@ export const findContactByEmail = async (email: string): Promise<HubSpotContact 
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Accept: 'application/json',
         Authorization: `Bearer ${PRIVATE_APP_TOKEN}`,
       },
       body: JSON.stringify({
@@ -104,7 +119,7 @@ export const findContactByEmail = async (email: string): Promise<HubSpotContact 
               {
                 propertyName: 'email',
                 operator: 'EQ',
-                value: email,
+                value: email.trim().toLowerCase(),
               },
             ],
           },
@@ -112,6 +127,7 @@ export const findContactByEmail = async (email: string): Promise<HubSpotContact 
         properties: ['firstname', 'lastname', 'email'],
         limit: 1,
       }),
+      mode: 'cors',
     });
 
     if (!response.ok) {
@@ -155,23 +171,35 @@ export const upsertContact = async (data: HubSpotFormData, existingContact?: Hub
     const contact = existingContact ?? (await findContactByEmail(data.email));
 
     if (contact?.id) {
-      await fetch(`https://api.hubapi.com/crm/v3/objects/contacts/${contact.id}`, {
+      const updateResponse = await fetch(`https://api.hubapi.com/crm/v3/objects/contacts/${contact.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
+          Accept: 'application/json',
           Authorization: `Bearer ${PRIVATE_APP_TOKEN}`,
         },
         body: JSON.stringify({ properties }),
+        mode: 'cors',
       });
+
+      if (!updateResponse.ok) {
+        console.error('HubSpot contact update failed', await updateResponse.text());
+      }
     } else {
-      await fetch('https://api.hubapi.com/crm/v3/objects/contacts', {
+      const createResponse = await fetch('https://api.hubapi.com/crm/v3/objects/contacts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Accept: 'application/json',
           Authorization: `Bearer ${PRIVATE_APP_TOKEN}`,
         },
         body: JSON.stringify({ properties }),
+        mode: 'cors',
       });
+
+      if (!createResponse.ok) {
+        console.error('HubSpot contact creation failed', await createResponse.text());
+      }
     }
   } catch (error) {
     console.error('HubSpot upsert error', error);
