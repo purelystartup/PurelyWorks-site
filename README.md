@@ -18,3 +18,18 @@ View your app in AI Studio: https://ai.studio/apps/drive/1h-FHIUVPdqF8Y0aBHTRuI_
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+## Payload-ready theme and routes
+
+- Core marketing pages: `/`, `/purely-flex`, `/focused-development`, `/focused-recruiting`, `/focused-proposals`
+- Blog index: `/blog`
+- Admin login handoff for your Payload instance: `/admin`
+
+Default admin credentials for local handoff and staging:
+
+```
+Email: admin@purely.works
+Password: purely!123
+```
+
+Replace these with environment-specific secrets when connecting to a live Payload backend.
