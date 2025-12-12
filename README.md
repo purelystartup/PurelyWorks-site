@@ -29,14 +29,14 @@ Set `VITE_PAYLOAD_ADMIN_URL` to the URL of your Payload admin dashboard (for exa
 - Blog index: `/blog`
 - Admin login handoff for your Payload instance: `/admin`
 
-Default admin credentials for local handoff and staging:
+Default admin credentials (created by the seed script):
 
 ```
-Email: admin@purely.works
-Password: purely!123
+Email: farid@purelyworks.com
+Password: PurelySecure!123 (override via PURELY_ADMIN_PASSWORD)
 ```
 
-Replace these with environment-specific secrets when connecting to a live Payload backend.
+Replace these with environment-specific secrets when connecting to a live Payload backend or enabling SSO.
 
 ## Run the Payload backend on the root domain
 
@@ -57,17 +57,19 @@ The repo now ships with a Payload CMS instance that lives alongside the marketin
    ```
    npm run cms:dev
    ```
-3. Seed the admin user if this is the first run:
+3. Seed the admin user if this is the first run (creates `farid@purelyworks.com` with the password from `PURELY_ADMIN_PASSWORD` or `PurelySecure!123`):
    ```
    npm run cms:seed
    ```
 
-You can now log in at `http://localhost:4000/admin` with `farid@purelyworks.com` and the password you set via `PURELY_ADMIN_PASSWORD` (or the default `PurelySecure!123`). Blog posts created in Payload appear on `/blog` and individual posts render at `/blog/:slug`.
+You can now log in at `http://localhost:4000/admin` using the seeded credentials. Blog posts created in Payload appear on `/blog` and individual posts render at `/blog/:slug`.
 
 ## How to log in to the admin handoff
 
-1. Start the site locally with `npm run dev` (or deploy it and visit the hosted URL).
-2. Open `/admin` in your browser (e.g., `http://localhost:5173/admin` when running locally).
-3. Use the default credentials above to sign in and manage pages or blog posts via your Payload instance.
+Local development (uses the bundled Payload instance on the root domain):
 
-Once your Payload backend is wired up, swap in your real admin email/password (or SSO) so the handoff screen reflects the production credentials.
+1. Build once with `npm run build`, then start the CMS server with `npm run cms:dev`.
+2. If you haven't seeded an account yet, run `npm run cms:seed` in another terminal.
+3. Visit `http://localhost:4000/admin` and sign in with `farid@purelyworks.com` and your `PURELY_ADMIN_PASSWORD` value (defaults to `PurelySecure!123`).
+
+When deployed, point DNS and your reverse proxy to your Payload host so `/admin` resolves on `https://www.purelyworks.com`. Keep `VITE_PAYLOAD_PUBLIC_URL` and `VITE_PAYLOAD_ADMIN_URL` aligned with your production origin so the blog and admin UI stay on the same domain.
