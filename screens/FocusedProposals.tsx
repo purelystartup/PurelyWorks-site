@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from 'react';
 import { generateNanoImage } from '../services/geminiService';
 import { ScrollReveal } from '../components/ScrollReveal';
@@ -54,7 +56,7 @@ export const FocusedProposals: React.FC = () => {
            const img = await generateNanoImage("Close up of high end fountain pen on document, organized chaos of strategy papers, warm lighting, professional, winning atmosphere, photorealistic");
            if (img) setBgImage(img);
         };
-        if (process.env.API_KEY) init();
+        if (process.env.NEXT_PUBLIC_GEMINI_ENABLED === 'true') init();
     }, []);
 
     return (

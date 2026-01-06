@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { ScrollReveal } from './ScrollReveal';
 import { ShieldCheck, Database, Zap, Cpu, RefreshCw, Globe } from 'lucide-react';

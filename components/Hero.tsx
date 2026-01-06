@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from 'react';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { generateNanoImage } from '../services/geminiService';
@@ -20,7 +22,7 @@ export const Hero: React.FC = () => {
 
   useEffect(() => {
     // Try to generate an initial image on mount if API key exists
-    if (process.env.API_KEY) {
+    if (process.env.NEXT_PUBLIC_GEMINI_ENABLED === 'true') {
         generateHeroImage();
     }
   }, []);

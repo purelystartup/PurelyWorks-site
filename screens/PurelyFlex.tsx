@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect } from 'react';
 import { Hero } from '../components/Hero';
 import { ServiceCards } from '../components/ServiceCards';

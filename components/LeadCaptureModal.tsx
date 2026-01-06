@@ -1,3 +1,4 @@
+"use client";
 
 import React, { useState, useEffect } from 'react';
 import { X, Mail, ArrowRight, CheckCircle2, Loader2, Calendar, MessageSquare, Send } from 'lucide-react';

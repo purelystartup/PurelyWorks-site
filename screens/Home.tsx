@@ -1,24 +1,28 @@
+"use client";
+
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { ArrowRight, Code2, Users, FileText, Zap, Layers } from 'lucide-react';
-import { Page } from '../types';
 import { generateNanoImage } from '../services/geminiService';
 import { ScrollReveal } from '../components/ScrollReveal';
 import { ScalingPhilosophy } from '../components/ScalingPhilosophy';
 import { WhyDifferent } from '../components/WhyDifferent';
 
-interface HomeProps {
-  onNavigate: (page: Page) => void;
-}
-
-export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
+export const Home: React.FC = () => {
   const [bgImage, setBgImage] = useState<string | null>(null);
+  const router = useRouter();
+
+  const handleNavigate = (path: string) => {
+    router.push(path);
+    window.scrollTo(0, 0);
+  };
 
   useEffect(() => {
     const init = async () => {
        const img = await generateNanoImage("Abstract minimalist architectural glass structure, white and indigo lighting, 8k resolution, futuristic agency headquarters");
        if (img) setBgImage(img);
     };
-    if (process.env.API_KEY) init();
+    if (process.env.NEXT_PUBLIC_GEMINI_ENABLED === 'true') init();
   }, []);
 
   return (
@@ -62,7 +66,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             <ScrollReveal delay={300}>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                     <button 
-                        onClick={() => onNavigate('FLEX')}
+                        onClick={() => handleNavigate('/purely-flex')}
                         className="w-full sm:w-auto px-8 py-5 text-white rounded-2xl font-bold text-lg transition-all shadow-xl flex items-center justify-center gap-2 group"
                         style={{ backgroundColor: 'var(--ocean-blue)', boxShadow: '0 10px 25px -10px rgba(27,138,191,0.25)' }}
                     >
@@ -90,7 +94,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                 {/* Purely Flex Card */}
                 <ScrollReveal delay={100}>
                     <div 
-                        onClick={() => onNavigate('FLEX')}
+                        onClick={() => handleNavigate('/purely-flex')}
                         className="group cursor-pointer relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-50 to-white border border-slate-200 p-10 hover:shadow-2xl transition-all duration-500 h-full flex flex-col"
                     >
                         <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
@@ -120,7 +124,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                             <p className="text-slate-400 mb-8">Dedicated capacity for high-volume needs.</p>
                             <div className="space-y-4 flex-grow">
                                 <button 
-                                    onClick={() => onNavigate('DEV')}
+                                    onClick={() => handleNavigate('/focused-development')}
                                     className="w-full p-6 rounded-xl bg-slate-800/50 border border-slate-700 hover:bg-slate-800 hover:border-emerald-500/50 transition-all flex items-center gap-4 group"
                                 >
                                     <div className="p-3 rounded-lg bg-emerald-500/10 text-emerald-400">
@@ -134,7 +138,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                                 </button>
 
                                 <button 
-                                    onClick={() => onNavigate('RECRUITING')}
+                                    onClick={() => handleNavigate('/focused-recruiting')}
                                     className="w-full p-6 rounded-xl bg-slate-800/50 border border-slate-700 hover:bg-slate-800 hover:border-blue-500/50 transition-all flex items-center gap-4 group"
                                 >
                                     <div className="p-3 rounded-lg bg-blue-500/10 text-blue-400">
@@ -148,7 +152,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                                 </button>
 
                                 <button 
-                                    onClick={() => onNavigate('PROPOSALS')}
+                                    onClick={() => handleNavigate('/focused-proposals')}
                                     className="w-full p-6 rounded-xl bg-slate-800/50 border border-slate-700 hover:bg-slate-800 hover:border-purple-500/50 transition-all flex items-center gap-4 group"
                                 >
                                     <div className="p-3 rounded-lg bg-purple-500/10 text-purple-400">

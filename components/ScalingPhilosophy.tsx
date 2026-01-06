@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { ScrollReveal } from './ScrollReveal';
 import { GitGraph, Rocket, LineChart, Layers } from 'lucide-react';
@@ -15,7 +17,8 @@ const stages = [
             "Build trust & rhythms",
             "Keep costs contained"
         ],
-        color: "bg-indigo-500"
+        color: "bg-indigo-500",
+        textColor: "text-indigo-600"
     },
     {
         id: 2,
@@ -29,7 +32,8 @@ const stages = [
             "Example: Focused Recruiting + Flex Dev",
             "Scale where ROI is proven"
         ],
-        color: "bg-purple-500"
+        color: "bg-purple-500",
+        textColor: "text-purple-600"
     },
     {
         id: 3,
@@ -43,7 +47,8 @@ const stages = [
             "Custom Tech Advantage",
             "Flex as strategic backup"
         ],
-        color: "bg-emerald-500"
+        color: "bg-emerald-500",
+        textColor: "text-emerald-600"
     }
 ];
 
@@ -80,9 +85,9 @@ export const ScalingPhilosophy: React.FC = () => {
                                         </div>
                                         
                                         <div className="flex items-center justify-between mb-4">
-                                            <div className={`p-3 rounded-xl ${stage.color} bg-opacity-10 text-${stage.color.split('-')[1]}-600`}>
-                                                {stage.icon}
-                                            </div>
+                                        <div className={`p-3 rounded-xl ${stage.color} bg-opacity-10 ${stage.textColor}`}>
+                                            {stage.icon}
+                                        </div>
                                             <span className="text-xs font-bold uppercase tracking-widest text-slate-400">{stage.period}</span>
                                         </div>
 

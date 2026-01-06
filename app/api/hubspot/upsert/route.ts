@@ -1,35 +1,19 @@
+import { NextResponse } from 'next/server';
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 const HUBSPOT_ACCESS_TOKEN = process.env.HUBSPOT_ACCESS_TOKEN;
 const HUBSPOT_REFRESH_TOKEN = process.env.HUBSPOT_REFRESH_TOKEN;
 const HUBSPOT_CLIENT_ID = process.env.HUBSPOT_CLIENT_ID;
 const HUBSPOT_CLIENT_SECRET = process.env.HUBSPOT_CLIENT_SECRET;
 
-const hasOAuthConfig = Boolean(HUBSPOT_REFRESH_TOKEN && HUBSPOT_CLIENT_ID && HUBSPOT_CLIENT_SECRET);
+const hasOAuthConfig = Boolean(
+  HUBSPOT_REFRESH_TOKEN && HUBSPOT_CLIENT_ID && HUBSPOT_CLIENT_SECRET
+);
 const hasAuthConfig = Boolean(HUBSPOT_ACCESS_TOKEN || hasOAuthConfig);
 
 let cachedToken: { value: string; expiresAt: number } | null = null;
-
-const sendJson = (res: any, status: number, body: unknown) => {
-  res.statusCode = status;
-  res.setHeader('Content-Type', 'application/json');
-  res.end(JSON.stringify(body));
-};
-
-const parseBody = (body: any) => {
-  if (!body) return {};
-  if (typeof body === 'string') {
-    try {
-      return JSON.parse(body);
-    } catch {
-      return {};
-    }
-  }
-  return body;
-};
-
-const toTrimmed = (value: unknown): string => {
-  if (typeof value !== 'string') return '';
-  return value.trim();
-};
 
 const getAccessToken = async (forceRefresh = false): Promise<string | null> => {
   if (!hasOAuthConfig) {
@@ -105,22 +89,24 @@ const hubspotRequest = async (url: string, options: RequestInit, retry = true) =
   return { ok: false, result };
 };
 
-export default async function handler(req: any, res: any) {
-  if (req.method !== 'POST') {
-    return sendJson(res, 405, { error: 'Method not allowed' });
-  }
-
+export async function POST(request: Request) {
   if (!hasAuthConfig) {
-    return sendJson(res, 500, { error: 'HubSpot OAuth not configured' });
+    return NextResponse.json({ error: 'HubSpot OAuth not configured' }, { status: 500 });
   }
 
-  const payload = parseBody(req.body);
-  const email = toTrimmed(payload.email);
-  const firstname = toTrimmed(payload.firstname);
-  const lastname = toTrimmed(payload.lastname);
+  let payload: { email?: string; firstname?: string; lastname?: string } = {};
+  try {
+    payload = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON payload' }, { status: 400 });
+  }
+
+  const email = typeof payload.email === 'string' ? payload.email.trim() : '';
+  const firstname = typeof payload.firstname === 'string' ? payload.firstname.trim() : '';
+  const lastname = typeof payload.lastname === 'string' ? payload.lastname.trim() : '';
 
   if (!email) {
-    return sendJson(res, 400, { error: 'Missing email' });
+    return NextResponse.json({ error: 'Missing email' }, { status: 400 });
   }
 
   const updateProperties: Record<string, string> = {};
@@ -128,68 +114,75 @@ export default async function handler(req: any, res: any) {
   if (lastname) updateProperties.lastname = lastname;
 
   try {
-    const searchResponse = await hubspotRequest('https://api.hubapi.com/crm/v3/objects/contacts/search', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        filterGroups: [
-          {
-            filters: [
-              { propertyName: 'email', operator: 'EQ', value: email },
-            ],
-          },
-        ],
-        properties: ['email'],
-        limit: 1,
-      }),
-    });
+    const searchResponse = await hubspotRequest(
+      'https://api.hubapi.com/crm/v3/objects/contacts/search',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          filterGroups: [
+            {
+              filters: [{ propertyName: 'email', operator: 'EQ', value: email }],
+            },
+          ],
+          properties: ['email'],
+          limit: 1,
+        }),
+      }
+    );
 
     if (!searchResponse.ok) {
       console.error('HubSpot search error:', searchResponse.result);
-      return sendJson(res, 502, { error: 'HubSpot search failed' });
+      return NextResponse.json({ error: 'HubSpot search failed' }, { status: 502 });
     }
 
     const existing = searchResponse.result?.results?.[0];
     if (existing?.id) {
       if (!Object.keys(updateProperties).length) {
-        return sendJson(res, 200, { status: 'noop', id: existing.id });
+        return NextResponse.json({ status: 'noop', id: existing.id });
       }
 
-      const updateResponse = await hubspotRequest(`https://api.hubapi.com/crm/v3/objects/contacts/${existing.id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ properties: updateProperties }),
-      });
+      const updateResponse = await hubspotRequest(
+        `https://api.hubapi.com/crm/v3/objects/contacts/${existing.id}`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ properties: updateProperties }),
+        }
+      );
 
       if (!updateResponse.ok) {
         console.error('HubSpot update error:', updateResponse.result);
-        return sendJson(res, 502, { error: 'HubSpot update failed' });
+        return NextResponse.json({ error: 'HubSpot update failed' }, { status: 502 });
       }
 
-      return sendJson(res, 200, { status: 'updated', id: existing.id });
+      return NextResponse.json({ status: 'updated', id: existing.id });
     }
 
     const createProperties = { email, ...updateProperties };
-    const createResponse = await hubspotRequest('https://api.hubapi.com/crm/v3/objects/contacts', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ properties: createProperties }),
-    });
+    const createResponse = await hubspotRequest(
+      'https://api.hubapi.com/crm/v3/objects/contacts',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ properties: createProperties }),
+      }
+    );
 
     if (!createResponse.ok) {
       console.error('HubSpot create error:', createResponse.result);
-      return sendJson(res, 502, { error: 'HubSpot create failed' });
+      return NextResponse.json({ error: 'HubSpot create failed' }, { status: 502 });
     }
 
-    return sendJson(res, 200, { status: 'created', id: createResponse.result?.id });
+    return NextResponse.json({ status: 'created', id: createResponse.result?.id });
   } catch (error) {
     console.error('HubSpot upsert exception:', error);
-    return sendJson(res, 500, { error: 'HubSpot upsert failed' });
+    return NextResponse.json({ error: 'HubSpot upsert failed' }, { status: 500 });
   }
 }

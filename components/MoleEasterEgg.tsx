@@ -1,7 +1,7 @@
+"use client";
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { X, Hammer, Trophy, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, AlertCircle, Play } from 'lucide-react';
-import { Logo } from './Logo';
 
 // --- GAME CONSTANTS ---
 const TILE_SIZE = 30;

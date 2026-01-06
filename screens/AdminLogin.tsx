@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useMemo, useState } from 'react';
 import { Lock, LogIn, ShieldCheck } from 'lucide-react';
 

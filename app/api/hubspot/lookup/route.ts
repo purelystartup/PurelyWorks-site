@@ -1,25 +1,19 @@
+import { NextResponse } from 'next/server';
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 const HUBSPOT_ACCESS_TOKEN = process.env.HUBSPOT_ACCESS_TOKEN;
 const HUBSPOT_REFRESH_TOKEN = process.env.HUBSPOT_REFRESH_TOKEN;
 const HUBSPOT_CLIENT_ID = process.env.HUBSPOT_CLIENT_ID;
 const HUBSPOT_CLIENT_SECRET = process.env.HUBSPOT_CLIENT_SECRET;
 
-const hasOAuthConfig = Boolean(HUBSPOT_REFRESH_TOKEN && HUBSPOT_CLIENT_ID && HUBSPOT_CLIENT_SECRET);
+const hasOAuthConfig = Boolean(
+  HUBSPOT_REFRESH_TOKEN && HUBSPOT_CLIENT_ID && HUBSPOT_CLIENT_SECRET
+);
 const hasAuthConfig = Boolean(HUBSPOT_ACCESS_TOKEN || hasOAuthConfig);
 
 let cachedToken: { value: string; expiresAt: number } | null = null;
-
-const sendJson = (res: any, status: number, body: unknown) => {
-  res.statusCode = status;
-  res.setHeader('Content-Type', 'application/json');
-  res.end(JSON.stringify(body));
-};
-
-const getEmail = (query: any): string => {
-  if (!query || typeof query.email === 'undefined') return '';
-  if (Array.isArray(query.email)) return query.email[0] || '';
-  if (typeof query.email === 'string') return query.email;
-  return '';
-};
 
 const getAccessToken = async (forceRefresh = false): Promise<string | null> => {
   if (!hasOAuthConfig) {
@@ -95,50 +89,48 @@ const hubspotRequest = async (url: string, options: RequestInit, retry = true) =
   return { ok: false, result };
 };
 
-export default async function handler(req: any, res: any) {
-  if (req.method !== 'GET') {
-    return sendJson(res, 405, { error: 'Method not allowed' });
-  }
-
+export async function GET(request: Request) {
   if (!hasAuthConfig) {
-    return sendJson(res, 500, { error: 'HubSpot OAuth not configured' });
+    return NextResponse.json({ error: 'HubSpot OAuth not configured' }, { status: 500 });
   }
 
-  const email = getEmail(req.query).trim();
+  const { searchParams } = new URL(request.url);
+  const email = (searchParams.get('email') || '').trim();
   if (!email) {
-    return sendJson(res, 400, { error: 'Missing email' });
+    return NextResponse.json({ error: 'Missing email' }, { status: 400 });
   }
 
   try {
-    const response = await hubspotRequest('https://api.hubapi.com/crm/v3/objects/contacts/search', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        filterGroups: [
-          {
-            filters: [
-              { propertyName: 'email', operator: 'EQ', value: email },
-            ],
-          },
-        ],
-        properties: ['email', 'firstname', 'lastname'],
-        limit: 1,
-      }),
-    });
+    const response = await hubspotRequest(
+      'https://api.hubapi.com/crm/v3/objects/contacts/search',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          filterGroups: [
+            {
+              filters: [{ propertyName: 'email', operator: 'EQ', value: email }],
+            },
+          ],
+          properties: ['email', 'firstname', 'lastname'],
+          limit: 1,
+        }),
+      }
+    );
 
     if (!response.ok) {
       console.error('HubSpot lookup error:', response.result);
-      return sendJson(res, 502, { error: 'HubSpot lookup failed' });
+      return NextResponse.json({ error: 'HubSpot lookup failed' }, { status: 502 });
     }
 
     const contact = response.result?.results?.[0];
     if (!contact) {
-      return sendJson(res, 200, { found: false });
+      return NextResponse.json({ found: false });
     }
 
-    return sendJson(res, 200, {
+    return NextResponse.json({
       found: true,
       contact: {
         id: contact.id,
@@ -149,6 +141,6 @@ export default async function handler(req: any, res: any) {
     });
   } catch (error) {
     console.error('HubSpot lookup exception:', error);
-    return sendJson(res, 500, { error: 'HubSpot lookup failed' });
+    return NextResponse.json({ error: 'HubSpot lookup failed' }, { status: 500 });
   }
 }

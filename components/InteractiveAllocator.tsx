@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Tooltip } from 'recharts';
 import { AllocationState, MonthScenario } from '../types';

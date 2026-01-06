@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { Check, ChevronRight } from 'lucide-react';
 import { ScrollReveal } from './ScrollReveal';
@@ -15,26 +17,36 @@ interface ServiceTiersProps {
   colorTheme: 'indigo' | 'blue' | 'emerald' | 'purple';
 }
 
+const COLOR_MAP = {
+  blue: {
+    solid: 'bg-blue-600',
+    soft: 'bg-blue-600/10',
+    text: 'text-blue-600',
+    border: 'border-blue-200 hover:border-blue-400',
+  },
+  emerald: {
+    solid: 'bg-emerald-600',
+    soft: 'bg-emerald-600/10',
+    text: 'text-emerald-600',
+    border: 'border-emerald-200 hover:border-emerald-400',
+  },
+  purple: {
+    solid: 'bg-purple-600',
+    soft: 'bg-purple-600/10',
+    text: 'text-purple-600',
+    border: 'border-purple-200 hover:border-purple-400',
+  },
+  indigo: {
+    solid: 'bg-indigo-600',
+    soft: 'bg-indigo-600/10',
+    text: 'text-indigo-600',
+    border: 'border-indigo-200 hover:border-indigo-400',
+  },
+};
+
 export const ServiceTiers: React.FC<ServiceTiersProps> = ({ tiers, colorTheme }) => {
   const [activeTier, setActiveTier] = useState(0);
-
-  const getColor = (opacity = 100) => {
-    switch (colorTheme) {
-      case 'blue': return `bg-blue-600/${opacity} text-blue-600`;
-      case 'emerald': return `bg-emerald-600/${opacity} text-emerald-600`;
-      case 'purple': return `bg-purple-600/${opacity} text-purple-600`;
-      default: return `bg-indigo-600/${opacity} text-indigo-600`;
-    }
-  };
-  
-  const getBorderColor = () => {
-      switch (colorTheme) {
-      case 'blue': return `border-blue-200 hover:border-blue-400`;
-      case 'emerald': return `border-emerald-200 hover:border-emerald-400`;
-      case 'purple': return `border-purple-200 hover:border-purple-400`;
-      default: return `border-indigo-200 hover:border-indigo-400`;
-    }
-  }
+  const colors = COLOR_MAP[colorTheme] ?? COLOR_MAP.indigo;
 
   return (
     <section className="py-20 bg-slate-50">
@@ -57,7 +69,7 @@ export const ServiceTiers: React.FC<ServiceTiersProps> = ({ tiers, colorTheme })
                 onClick={() => setActiveTier(idx)}
                 className={`w-full text-left p-6 rounded-2xl transition-all duration-300 border-2 group ${
                   activeTier === idx 
-                    ? `bg-white shadow-xl ${getBorderColor()} border-transparent ring-2 ring-offset-2 ring-offset-slate-50 ring-opacity-50 scale-[1.02]` 
+                    ? `bg-white shadow-xl ${colors.border} border-transparent ring-2 ring-offset-2 ring-offset-slate-50 ring-opacity-50 scale-[1.02]`
                     : 'bg-white/50 border-transparent hover:bg-white hover:shadow-md'
                 }`}
               >
@@ -65,9 +77,9 @@ export const ServiceTiers: React.FC<ServiceTiersProps> = ({ tiers, colorTheme })
                   <h3 className={`text-lg font-bold ${activeTier === idx ? 'text-slate-900' : 'text-slate-500'}`}>
                     {tier.name}
                   </h3>
-                  {activeTier === idx && <ChevronRight size={20} className={getColor(100).split(' ')[1]} />}
+                  {activeTier === idx && <ChevronRight size={20} className={colors.text} />}
                 </div>
-                <p className={`text-sm font-mono ${activeTier === idx ? getColor(100).split(' ')[1] : 'text-slate-400'}`}>
+                <p className={`text-sm font-mono ${activeTier === idx ? colors.text : 'text-slate-400'}`}>
                   {tier.share}
                 </p>
               </button>
@@ -78,13 +90,13 @@ export const ServiceTiers: React.FC<ServiceTiersProps> = ({ tiers, colorTheme })
           <div className="lg:col-span-8">
              <div className="bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-slate-100 min-h-[500px] relative overflow-hidden transition-all duration-500">
                 {/* Background blob */}
-                <div className={`absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl opacity-10 -mr-32 -mt-32 transition-colors duration-500 ${getColor(100).split(' ')[0]}`} />
+                <div className={`absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl opacity-10 -mr-32 -mt-32 transition-colors duration-500 ${colors.solid}`} />
                 
                 <div className="relative z-10">
                     <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                         <div>
                             <h3 className="text-3xl font-bold text-slate-900">{tiers[activeTier].name}</h3>
-                            <span className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-bold bg-slate-100 ${getColor(100).split(' ')[1]}`}>
+                            <span className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-bold bg-slate-100 ${colors.text}`}>
                                 {tiers[activeTier].share}
                             </span>
                         </div>
@@ -98,8 +110,8 @@ export const ServiceTiers: React.FC<ServiceTiersProps> = ({ tiers, colorTheme })
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 mb-10">
                         {tiers[activeTier].features.map((feature, i) => (
                             <div key={i} className="flex items-start gap-3 animate-fade-in" style={{ animationDelay: `${i * 50}ms` }}>
-                                <div className={`mt-1 w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${getColor(10).split(' ')[0]}`}>
-                                    <Check size={12} className={getColor(100).split(' ')[1]} />
+                                <div className={`mt-1 w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${colors.soft}`}>
+                                    <Check size={12} className={colors.text} />
                                 </div>
                                 <span className="text-slate-700 text-sm font-medium">{feature}</span>
                             </div>
@@ -112,7 +124,7 @@ export const ServiceTiers: React.FC<ServiceTiersProps> = ({ tiers, colorTheme })
                             <ul className="space-y-2">
                                 {tiers[activeTier].perfectFor?.map((item, i) => (
                                     <li key={i} className="text-sm text-slate-500 flex items-center gap-2">
-                                        <span className={`w-1.5 h-1.5 rounded-full ${getColor(100).split(' ')[0]}`}></span>
+                                        <span className={`w-1.5 h-1.5 rounded-full ${colors.solid}`}></span>
                                         {item}
                                     </li>
                                 ))}

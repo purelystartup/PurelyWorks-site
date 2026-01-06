@@ -2,8 +2,14 @@
 // services/hubspotService.ts
 
 // These should be defined in your environment variables
-const PORTAL_ID = process.env.REACT_APP_HS_PORTAL_ID || 'YOUR_PORTAL_ID';
-const FORM_ID = process.env.REACT_APP_HS_FORM_ID || 'YOUR_FORM_GUID';
+const PORTAL_ID =
+  process.env.NEXT_PUBLIC_HUBSPOT_PORTAL_ID ||
+  process.env.NEXT_PUBLIC_HS_PORTAL_ID ||
+  'YOUR_PORTAL_ID';
+const FORM_ID =
+  process.env.NEXT_PUBLIC_HUBSPOT_FORM_ID ||
+  process.env.NEXT_PUBLIC_HS_FORM_ID ||
+  'YOUR_FORM_GUID';
 
 interface HubSpotFormData {
   email: string;

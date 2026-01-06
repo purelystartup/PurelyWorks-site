@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bright-lavender: #ba91f2ff;
+  --ocean-blue: #1b8abfff;
+  --celadon: #77d9abff;
+  --sunlit-clay: #f2bc79ff;
+  --salmon: #f2856dff;
+
+  --bright-lavender-100: rgba(186, 145, 242, 0.08);
+  --bright-lavender-200: rgba(186, 145, 242, 0.16);
+  --bright-lavender-300: rgba(186, 145, 242, 0.24);
+
+  --ocean-blue-100: rgba(27, 138, 191, 0.08);
+  --ocean-blue-200: rgba(27, 138, 191, 0.16);
+  --ocean-blue-300: rgba(27, 138, 191, 0.24);
+
+  --celadon-100: rgba(119, 217, 171, 0.08);
+  --celadon-200: rgba(119, 217, 171, 0.16);
+  --celadon-300: rgba(119, 217, 171, 0.24);
+
+  --sunlit-clay-100: rgba(242, 188, 121, 0.08);
+  --sunlit-clay-200: rgba(242, 188, 121, 0.16);
+  --sunlit-clay-300: rgba(242, 188, 121, 0.24);
+
+  --salmon-100: rgba(242, 133, 109, 0.08);
+  --salmon-200: rgba(242, 133, 109, 0.16);
+  --salmon-300: rgba(242, 133, 109, 0.24);
+
+  --custom-scroll-thumb: linear-gradient(
+    to bottom,
+    var(--ocean-blue),
+    var(--bright-lavender),
+    var(--celadon)
+  );
+  --custom-scroll-track: #f8fafc;
+  --custom-scroll-ff-thumb: var(--ocean-blue);
+}
+
+body {
+  font-family: var(--font-inter), 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--custom-scroll-ff-thumb) var(--custom-scroll-track);
+}
+
+::-webkit-scrollbar {
+  width: 16px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--custom-scroll-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--custom-scroll-thumb);
+  border-radius: 100vh;
+  border: 4px solid var(--custom-scroll-track);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  border-width: 3px;
+}
+
+.font-hand {
+  font-family: var(--font-patrick-hand), 'Patrick Hand', cursive;
+}

@@ -1,7 +1,7 @@
+"use client";
 
 import React from 'react';
-import logo from '../assets/logo.svg';
 
 export const Logo: React.FC<{ className?: string; alt?: string }> = ({ className = 'h-10 w-auto', alt = 'Purely Works Logo' }) => {
-  return <img src={logo} className={className} alt={alt} />;
+  return <img src="/assets/logo.svg" className={className} alt={alt} />;
 };

@@ -15,15 +15,34 @@
     ],
     "moduleResolution": "bundler",
     "isolatedModules": true,
-    "moduleDetection": "force",
     "allowJs": true,
     "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./*"
       ]
     },
     "allowImportingTsExtensions": true,
-    "noEmit": true
-  }
+    "noEmit": true,
+    "strict": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
