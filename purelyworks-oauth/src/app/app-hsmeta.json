@@ -9,11 +9,16 @@
       "type": "oauth",
       "redirectUrls": [
         "http://localhost:3000/api/hubspot/callback",
-        "https://purelyworks-site.vercel.app/api/hubspot/callback"
+        "https://purelyworks-site.vercel.app/api/hubspot/callback",
+        "https://ixnmnmqyewrrvlscmulw.supabase.co/functions/v1/crm_oauth_callback"
       ],
       "requiredScopes": [
         "crm.objects.contacts.read",
-        "crm.objects.contacts.write"
+        "crm.objects.contacts.write",
+        "crm.objects.companies.read",
+        "crm.objects.companies.write",
+        "crm.schemas.companies.read",
+        "crm.schemas.companies.write"
       ],
       "optionalScopes": [],
       "conditionallyRequiredScopes": []

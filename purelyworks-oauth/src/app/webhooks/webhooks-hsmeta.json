@@ -1,0 +1,31 @@
+{
+  "uid": "purelyworks_oauth_webhooks",
+  "type": "webhooks",
+  "config": {
+    "settings": {
+      "targetUrl": "https://ixnmnmqyewrrvlscmulw.supabase.co/functions/v1/crm_hubspot_webhook",
+      "maxConcurrentRequests": 10
+    },
+    "subscriptions": {
+      "crmObjects": [
+        {
+          "subscriptionType": "object.creation",
+          "objectType": "company",
+          "active": true
+        },
+        {
+          "subscriptionType": "object.propertyChange",
+          "objectType": "company",
+          "propertyName": "name",
+          "active": true
+        },
+        {
+          "subscriptionType": "object.propertyChange",
+          "objectType": "company",
+          "propertyName": "domain",
+          "active": true
+        }
+      ]
+    }
+  }
+}
