@@ -1,0 +1,34 @@
+{
+  "uid": "purelyworks_oauth_app",
+  "type": "app",
+  "config": {
+    "name": "Purely Works Website HubSpot Integration",
+    "description": "OAuth app to connect the Purely Works website forms with HubSpot contacts.",
+    "distribution": "private",
+    "auth": {
+      "type": "oauth",
+      "redirectUrls": [
+        "http://localhost:3000/api/hubspot/callback",
+        "https://purelyworks-site.vercel.app/api/hubspot/callback"
+      ],
+      "requiredScopes": [
+        "crm.objects.contacts.read",
+        "crm.objects.contacts.write"
+      ],
+      "optionalScopes": [],
+      "conditionallyRequiredScopes": []
+    },
+    "permittedUrls": {
+      "fetch": [
+        "https://api.hubapi.com"
+      ],
+      "iframe": [],
+      "img": []
+    },
+    "support": {
+      "supportEmail": "usman@purelyworks.com",
+      "documentationUrl": "https://purelyworks.com/docs",
+      "supportUrl": "https://purelyworks.com/support"
+    }
+  }
+}
