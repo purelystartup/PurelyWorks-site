@@ -24,8 +24,14 @@
           "objectType": "company",
           "propertyName": "domain",
           "active": true
+        },
+        {
+          "subscriptionType": "object.creation",
+          "objectType": "deal",
+          "active": true
         }
       ]
+
     }
   }
 }
