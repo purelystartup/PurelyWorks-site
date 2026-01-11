@@ -19,6 +19,8 @@
         "crm.objects.companies.write",
         "crm.schemas.companies.read",
         "crm.schemas.companies.write",
+        "crm.schemas.contacts.read",
+        "crm.schemas.contacts.write",
         "crm.objects.deals.read",
         "crm.objects.deals.write",
         "crm.schemas.deals.read",

@@ -29,9 +29,13 @@
           "subscriptionType": "object.creation",
           "objectType": "deal",
           "active": true
+        },
+        {
+          "subscriptionType": "object.creation",
+          "objectType": "contact",
+          "active": true
         }
       ]
-
     }
   }
 }
